@@ -16,24 +16,7 @@ void Game::updateEnemies(std::vector<FLText>& explosions, std::vector<Entity>& e
 		if (enemies[i].health <= 0) {
 			int rollcrack = rand() % 100;
 			if (rollcrack > 50) {
-				switch (enemies[i].type) {
-				case 0:
-					(*crack)++;
-					break;
-				case 1:
-					(*crack) += 2;
-					break;
-				case 2:
-					(*crack) += 8;
-					break;
-				case 3:
-					(*crack) += 30;
-					break;
-				case 4:
-					(*crack) += 50;
-					break;
-
-				}
+				(*crack) += enemies[i].level;
 			}
 			FLText f = { enemies[i].x, enemies[i].y, 50, 50, "NULL", 0, 0 };
 			explosions.push_back(f);
@@ -54,7 +37,7 @@ void Game::updateExplosions(std::vector<FLText>& explosions, double delta, SDL_T
 	}
 }
 
-void Game::updateButtons(std::vector<Button>& buttons, std::vector<Entity>& enemies, std::vector<FLText>& damagetext, Entity* player, SDL_Renderer* rend, TTF_Font* font, double *bcool, int targetenemy, int *crack, bool *playerturn, SDL_Texture* player4tex, SDL_Texture* player3tex, SDL_Texture* player2tex, Mix_Chunk* buttonsound, Mix_Chunk* cracksound) {
+void Game::updateButtons(std::vector<Button>& buttons, std::vector<FLText>& damagetext, Entity* player, Entity *targenemy, SDL_Renderer* rend, TTF_Font* font, int esize, double *bcool, int *crack, bool *playerturn, SDL_Texture* player4tex, SDL_Texture* player3tex, SDL_Texture* player2tex, Mix_Chunk* buttonsound, Mix_Chunk* cracksound) {
 	for (auto& i : buttons) {
 		SDL_Rect but = { i.x, i.y, i.w, i.h };
 		SDL_RenderDrawRect(rend, &but);
@@ -67,8 +50,8 @@ void Game::updateButtons(std::vector<Button>& buttons, std::vector<Entity>& enem
 		if (SDL_GetMouseState(&mx, &my) & SDL_BUTTON(SDL_BUTTON_LEFT)) {
 			for (auto& i : buttons) {
 				if (mx >= i.x && mx <= i.x + i.w && my >= i.y && my <= i.y + i.h) {
-					if (enemies.size() > 0) {
-						i.click(player, &enemies[targetenemy]);
+					if (esize > 0) {
+						i.click(player, targenemy);
 						FLText f = { rand() % 550 + (*player).x, rand() % 550 + (*player).y, 30, 12, std::to_string((*player).atkdmg), 0, 1 };
 						damagetext.push_back(f);
 						switch (k) {

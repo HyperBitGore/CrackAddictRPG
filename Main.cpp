@@ -7,7 +7,6 @@ const Uint8* keys;
 
 
 
-
 int main() {
 	srand(time(NULL));
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) > 0) {
@@ -68,6 +67,9 @@ int main() {
 	Entity player = {0, 0, 50, 100, 100, 1, 5};
 	player.xp = 0;
 	player.sprite = player2tex;
+	player.level = 1;
+	player.health = 100000;
+	player.atkdmg = 250;
 	int targetenemy = 0;
 	int xpreq = 10;
 	std::vector<Entity> tiles;
@@ -76,6 +78,7 @@ int main() {
 	std::vector<Button> buttons;
 	std::vector<FLText> damagetext;
 	std::vector<FLText> explosions;
+	Entity* targenemy;
 	game.createCombatButtons(buttons);
 	keys = SDL_GetKeyboardState(NULL);
 	std::cout << buttons.size() << std::endl;
@@ -84,7 +87,9 @@ int main() {
 	Mix_VolumeMusic(30);
 	Mix_PlayMusic(backtrack, -1);
 	int crack = 1;
-	game.createEnemyInstance(enemies, &player, enemtex, enem2tex, enem3tex, enem4tex, enem5tex);
+	std::vector<ESpawner> espawners;
+	game.createSpawners(espawners);
+	game.createEnemyInstance(enemies, espawners, &player, enemtex, enem2tex, enem3tex, enem4tex, enem5tex);
 	while (!exitf) {
 		delta = game.getDelta();
 		while (SDL_PollEvent(&e)) {
@@ -98,8 +103,6 @@ int main() {
 		SDL_RenderClear(rend);
 		//write out combat system here
 		if (combat) {
-			//list moves under attack, and put block and run off to side as big buttons
-			//limited number of moves
 			SDL_PumpEvents();
 			bcool += delta;
 			if (keys[SDL_SCANCODE_DOWN]) {
@@ -108,6 +111,7 @@ int main() {
 					targetenemy = 0;
 				}
 			}
+			targenemy = &enemies[targetenemy];
 			if (player.xp >= xpreq) {
 				player.level++;
 				player.atkdmg += 5;
@@ -120,11 +124,15 @@ int main() {
 			game.drawText(rend, font, "Health:", { 255, 255, 100, 0 }, 300, 20, 100, 50);
 			game.drawText(rend, font, std::to_string(player.health), { 255, 255, 100, 0 }, 400, 20, 100, 50);
 			game.drawText(rend, font, "Level:", {255, 255, 100, 0}, 50, 20, 100, 50);
-			game.drawText(rend, font, std::to_string(player.level), { 255, 255, 100, 0 }, 150, 20, 100, 50);
-			game.drawText(rend, font, "Attack Power:", { 255, 255, 100, 0 }, 50, 50, 100, 50);
-			game.drawText(rend, font, std::to_string(player.atkdmg), { 255, 255, 100, 0 }, 150, 50, 100, 50);
-			game.drawText(rend, font, "Crack:", { 255, 255, 100, 0 }, 50, 100, 100, 50);
-			game.drawText(rend, font, std::to_string(crack), { 255, 255, 100, 0 }, 150, 100, 100, 50);
+			game.drawText(rend, font, std::to_string(player.level), { 255, 255, 100, 0 }, 150, 20, 50, 50);
+			game.drawText(rend, font, "XP:", { 255, 255, 100, 0 }, 50, 70, 100, 50);
+			game.drawText(rend, font, std::to_string(player.xp), { 255, 255, 100, 0 }, 150, 70, 50, 50);
+			game.drawText(rend, font, "XP Required:", { 255, 255, 100, 0 }, 50, 120, 100, 50);
+			game.drawText(rend, font, std::to_string(xpreq), { 255, 255, 100, 0 }, 150, 120, 50, 50);
+			game.drawText(rend, font, "Attack Power:", { 255, 255, 100, 0 }, 50, 170, 100, 50);
+			game.drawText(rend, font, std::to_string(player.atkdmg), { 255, 255, 100, 0 }, 150, 170, 50, 50);
+			game.drawText(rend, font, "Crack:", { 255, 255, 100, 0 }, 50, 220, 100, 50);
+			game.drawText(rend, font, std::to_string(crack), { 255, 255, 100, 0 }, 150, 220, 50, 50);
 			SDL_Rect pl = { 300, 300, 50, 100 };
 			SDL_RenderCopy(rend, player.sprite, NULL, &pl);
 			game.updateDamage(damagetext, delta, red, green, rend, font);
@@ -133,7 +141,7 @@ int main() {
 				playerturn = true;
 			}
 			game.updateExplosions(explosions, delta, explotex, rend);
-			game.updateButtons(buttons, enemies, damagetext, &player, rend, font, &bcool, targetenemy, &crack, &playerturn, player4tex, player3tex, player2tex, buttonsound, cracksound);
+			game.updateButtons(buttons, damagetext, &player, targenemy, rend, font, enemies.size(), &bcool, &crack, &playerturn, player4tex, player3tex, player2tex, buttonsound, cracksound);
 			if (player.health < 0) {
 				player.health = 100;
 				player.atkdmg = 5;
@@ -141,11 +149,11 @@ int main() {
 				player.xp = 0;
 				crack = 1;
 				enemies.clear();
-				game.createEnemyInstance(enemies, &player, enemtex, enem2tex, enem3tex, enem4tex, enem5tex);
+				game.createEnemyInstance(enemies, espawners, &player, enemtex, enem2tex, enem3tex, enem4tex, enem5tex);
 			}
 			if (enemies.size() <= 0) {
 				crack++;
-				game.createEnemyInstance(enemies, &player, enemtex, enem2tex, enem3tex, enem4tex, enem5tex);
+				game.createEnemyInstance(enemies, espawners, &player, enemtex, enem2tex, enem3tex, enem4tex, enem5tex);
 			}
 		}
 		else{

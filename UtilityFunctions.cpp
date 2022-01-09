@@ -11,6 +11,15 @@ void Game::drawText(SDL_Renderer* rend, TTF_Font* font, std::string text, SDL_Co
 	SDL_FreeSurface(surf);
 	SDL_DestroyTexture(texture);
 }
+//Leftover from trying to implement std::function with std::bind to replace C function pointer
+//https://stackoverflow.com/questions/11037393/c-function-pointer-to-functions-with-variable-number-of-arguments
+//Might still be do able
+void Game::attackButton(Entity* player, Entity* enemy, SDL_Texture* player4tex, Mix_Chunk* buttonsound) {
+	(*enemy).health -= (*player).atkdmg;
+	(*player).sprite = player4tex;
+	Mix_PlayChannel(-1, buttonsound, 0);
+}
+//Button decs
 void atkButton(Entity* e, Entity* e2) {
 	(*e2).health -= (*e).atkdmg;
 }
@@ -34,285 +43,79 @@ void Game::createCombatButtons(std::vector<Button>& buttons) {
 	b3.click = &crackButton;
 	buttons.push_back(b3);
 }
+void Game::createSpawners(std::vector<ESpawner>& espawners) {
+	ESpawner e;
+	//Basic spawning
+	e.maxlvl = 5;
+	e.minlvl = 0;
+	e.spawnchances = { 0 };
+	e.etypes = { 0 };
+	espawners.push_back(e);
+	//Enemy 2 introduced
+	e.maxlvl = 10;
+	e.minlvl = 5;
+	e.spawnchances = { 52, 0 };
+	e.etypes = { 1, 0 };
+	espawners.push_back(e);
+	//Enemy 3 introduced
+	e.maxlvl = 20;
+	e.minlvl = 10;
+	e.spawnchances = { 52, 35, 0 };
+	e.etypes = { 2, 1, 0 };
+	espawners.push_back(e);
+	//Enemy 4 introduced
+	e.maxlvl = 40;
+	e.minlvl = 20;
+	e.spawnchances = { 48, 35, 20, 0 };
+	e.etypes = { 3, 2, 1, 0 };
+	espawners.push_back(e);
+	//Enemy 5 introduced
+	e.maxlvl = 100;
+	e.minlvl = 40;
+	e.spawnchances = { 45, 35, 20, 10, 0 };
+	e.etypes = { 4, 3, 2, 1, 0 };
+	espawners.push_back(e);
+}
 
 
 
-//write enemy creation here
-void Game::createEnemyInstance(std::vector<Entity>& enemies, Entity* p, SDL_Texture* enemtex, SDL_Texture* enem2tex, SDL_Texture* enem3tex, SDL_Texture* enem4tex, SDL_Texture* enem5tex) {
-	int enumb = rand() % 3 + 1;
-	bool e2 = false;
-	bool e3 = false;
-	bool e4 = false;
-	bool e5 = false;
-	if ((*p).level < 5) {
-		enumb = 1;
-	}
-	else if ((*p).level > 5 && (*p).level < 10) {
-		e2 = true;
-	}
-	else if ((*p).level > 10 && (*p).level < 20) {
-		e3 = true;
-	}
-	else if ((*p).level > 20 && (*p).level < 40) {
-		e4 = true;
-	}
-	else if ((*p).level > 40 && (*p).level < 100) {
-		e5 = true;
-	}
-	float sx = 600.0f;
-	float sy = 300.0f;
-	for (int i = 0; i < enumb; i++) {
-		if (e2) {
+void Game::createEnemyInstance(std::vector<Entity>& enemies, std::vector<ESpawner>& espawners,  Entity* p, SDL_Texture* enemtex, SDL_Texture* enem2tex, SDL_Texture* enem3tex, SDL_Texture* enem4tex, SDL_Texture* enem5tex) {
+	float sx = 500.0f;
+	float sy = 250.0f;
+	int spawnamount = rand() % 3 + 1;
+	for (auto& i : espawners) {
+		if ((*p).level >= i.minlvl && (*p).level < i.maxlvl) {
+			spawn:
 			int roll = rand() % 100;
-			if (roll > 52) {
-				Entity e;
-				e.atkdmg = 25;
-				e.level = 10;
-				e.type = 1;
-				e.equipped = STICK;
-				e.x = sx;
-				e.y = sy;
-				e.w = 50;
-				e.h = 100;
-				e.sprite = enem2tex;
-				e.health = 800;
-				enemies.push_back(e);
-				sx += 50.0f;
-				sy += 50.0f;
+			for (int j = 0; j < i.spawnchances.size(); j++) {
+				if (roll > i.spawnchances[j]) {
+					switch (i.etypes[j]) {
+					case 0:
+						spawnE1(enemies, &sx, &sy, enemtex);
+						break;
+					case 1:
+						spawnE2(enemies, &sx, &sy, enem2tex);
+						break;
+					case 2:
+						spawnE3(enemies, &sx, &sy, enem3tex);
+						break;
+					case 3:
+						spawnE4(enemies, &sx, &sy, enem4tex);
+						break;
+					case 4:
+						spawnE5(enemies, &sx, &sy, enem5tex);
+						break;
+					}
+				}
+				if (spawnamount > 0) {
+					spawnamount--;
+					goto spawn;
+				}
+				else {
+					return;
+				}
 			}
-			else {
-				Entity e;
-				e.atkdmg = 10;
-				e.level = 2;
-				e.type = 0;
-				e.equipped = STICK;
-				e.x = sx;
-				e.y = sy;
-				e.w = 50;
-				e.h = 100;
-				e.sprite = enemtex;
-				e.health = 50;
-				enemies.push_back(e);
-				sx += 50.0f;
-				sy += 50.0f;
-			}
-		}
-		else if (e3) {
-			int roll = rand() % 100;
-			if (roll > 52) {
-				Entity e;
-				e.atkdmg = 150;
-				e.level = 30;
-				e.type = 2;
-				e.sprite = enem3tex;
-				e.equipped = STICK;
-				e.x = sx;
-				e.y = sy;
-				e.w = 50;
-				e.h = 100;
-				e.health = 2000;
-				enemies.push_back(e);
-				sx += 50.0f;
-				sy += 50.0f;
-			}
-			else if (roll > 35) {
-				Entity e;
-				e.atkdmg = 25;
-				e.level = 10;
-				e.type = 1;
-				e.equipped = STICK;
-				e.sprite = enem2tex;
-				e.x = sx;
-				e.y = sy;
-				e.w = 50;
-				e.h = 100;
-				e.health = 800;
-				enemies.push_back(e);
-				sx += 50.0f;
-				sy += 50.0f;
-			}
-			else {
-				Entity e;
-				e.atkdmg = 10;
-				e.level = 2;
-				e.type = 0;
-				e.sprite = enemtex;
-				e.equipped = STICK;
-				e.x = sx;
-				e.y = sy;
-				e.w = 50;
-				e.h = 100;
-				e.health = 50;
-				enemies.push_back(e);
-				sx += 50.0f;
-				sy += 50.0f;
-			}
-		}
-		else if (e4) {
-			int roll = rand() % 100;
-			if (roll > 48) {
-				Entity e;
-				e.atkdmg = 550;
-				e.level = 50;
-				e.type = 3;
-				e.sprite = enem4tex;
-				e.equipped = STICK;
-				e.x = sx;
-				e.y = sy;
-				e.w = 50;
-				e.h = 100;
-				e.health = 5000;
-				enemies.push_back(e);
-				sx += 50.0f;
-				sy += 50.0f;
-			}
-			else if (roll > 35) {
-				Entity e;
-				e.atkdmg = 150;
-				e.level = 30;
-				e.type = 2;
-				e.sprite = enem3tex;
-				e.equipped = STICK;
-				e.x = sx;
-				e.y = sy;
-				e.w = 50;
-				e.h = 100;
-				e.health = 2000;
-				enemies.push_back(e);
-				sx += 50.0f;
-				sy += 50.0f;
-			}
-			else if (roll > 20) {
-				Entity e;
-				e.atkdmg = 25;
-				e.level = 10;
-				e.type = 1;
-				e.sprite = enem2tex;
-				e.equipped = STICK;
-				e.x = sx;
-				e.y = sy;
-				e.w = 50;
-				e.h = 100;
-				e.health = 800;
-				enemies.push_back(e);
-				sx += 50.0f;
-				sy += 50.0f;
-			}
-			else {
-				Entity e;
-				e.atkdmg = 10;
-				e.level = 2;
-				e.type = 0;
-				e.sprite = enemtex;
-				e.equipped = STICK;
-				e.x = sx;
-				e.y = sy;
-				e.w = 50;
-				e.h = 100;
-				e.health = 50;
-				enemies.push_back(e);
-				sx += 50.0f;
-				sy += 50.0f;
-			}
-		}
-		else if (e5) {
-		int roll = rand() % 100;
-		if (roll > 45) {
-			Entity e;
-			e.atkdmg = 1500;
-			e.level = 100;
-			e.type = 4;
-			e.sprite = enem5tex;
-			e.equipped = STICK;
-			e.x = sx;
-			e.y = sy;
-			e.w = 50;
-			e.h = 100;
-			e.health = 10000;
-			enemies.push_back(e);
-			sx += 50.0f;
-			sy += 50.0f;
-		}
-		else if (roll > 35) {
-			Entity e;
-			e.atkdmg = 550;
-			e.level = 50;
-			e.type = 3;
-			e.sprite = enem4tex;
-			e.equipped = STICK;
-			e.x = sx;
-			e.y = sy;
-			e.w = 50;
-			e.h = 100;
-			e.health = 5000;
-			enemies.push_back(e);
-			sx += 50.0f;
-			sy += 50.0f;
-		}
-		else if (roll > 20) {
-			Entity e;
-			e.atkdmg = 150;
-			e.level = 30;
-			e.type = 2;
-			e.sprite = enem3tex;
-			e.equipped = STICK;
-			e.x = sx;
-			e.y = sy;
-			e.w = 50;
-			e.h = 100;
-			e.health = 2000;
-			enemies.push_back(e);
-			sx += 50.0f;
-			sy += 50.0f;
-		}
-		else if (roll > 10) {
-			Entity e;
-			e.atkdmg = 25;
-			e.level = 10;
-			e.type = 1;
-			e.sprite = enem2tex;
-			e.equipped = STICK;
-			e.x = sx;
-			e.y = sy;
-			e.w = 50;
-			e.h = 100;
-			e.health = 800;
-			enemies.push_back(e);
-			sx += 50.0f;
-			sy += 50.0f;
-		}
-		else {
-			Entity e;
-			e.atkdmg = 10;
-			e.level = 2;
-			e.type = 0;
-			e.sprite = enemtex;
-			e.equipped = STICK;
-			e.x = sx;
-			e.y = sy;
-			e.w = 50;
-			e.h = 100;
-			e.health = 50;
-			enemies.push_back(e);
-			sx += 50.0f;
-			sy += 50.0f;
-		}
-		}
-		else {
-			Entity e;
-			e.atkdmg = 10;
-			e.level = 2;
-			e.type = 0;
-			e.sprite = enemtex;
-			e.equipped = STICK;
-			e.x = sx;
-			e.y = sy;
-			e.w = 50;
-			e.h = 100;
-			e.health = 50;
-			enemies.push_back(e);
-			sx += 50.0f;
-			sy += 50.0f;
 		}
 	}
 }
+
