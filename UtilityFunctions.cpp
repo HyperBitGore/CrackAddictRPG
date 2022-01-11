@@ -79,7 +79,7 @@ void Game::createSpawners(std::vector<ESpawner>& espawners) {
 
 
 
-void Game::createEnemyInstance(std::vector<Entity>& enemies, std::vector<ESpawner>& espawners,  Entity* p, SDL_Texture* enemtex, SDL_Texture* enem2tex, SDL_Texture* enem3tex, SDL_Texture* enem4tex, SDL_Texture* enem5tex) {
+void Game::createEnemyInstance(std::vector<Entity>& enemies, std::vector<ESpawner>& espawners,  Entity* p, texp head) {
 	float sx = 500.0f;
 	float sy = 250.0f;
 	int spawnamount = rand() % 3 + 1;
@@ -91,19 +91,19 @@ void Game::createEnemyInstance(std::vector<Entity>& enemies, std::vector<ESpawne
 					if (roll > i.spawnchances[j]) {
 						switch (i.etypes[j]) {
 						case 0:
-							spawnE1(enemies, &sx, &sy, enemtex);
+							spawnE1(enemies, &sx, &sy, findTex(head, "enemtex"));
 							break;
 						case 1:
-							spawnE2(enemies, &sx, &sy, enem2tex);
+							spawnE2(enemies, &sx, &sy, findTex(head, "enem2tex"));
 							break;
 						case 2:
-							spawnE3(enemies, &sx, &sy, enem3tex);
+							spawnE3(enemies, &sx, &sy, findTex(head, "enem3tex"));
 							break;
 						case 3:
-							spawnE4(enemies, &sx, &sy, enem4tex);
+							spawnE4(enemies, &sx, &sy, findTex(head, "enem4tex"));
 							break;
 						case 4:
-							spawnE5(enemies, &sx, &sy, enem5tex);
+							spawnE5(enemies, &sx, &sy, findTex(head, "enem5tex"));
 							break;
 						}
 						break;
@@ -114,4 +114,23 @@ void Game::createEnemyInstance(std::vector<Entity>& enemies, std::vector<ESpawne
 		}
 	}
 }
+//Make this work lmao
+void Game::insertTex(texp tex, SDL_Texture* current) {
+	texp t;
+	t = new TexListMem;
+	t->current = current;
+	t->next = tex;
+	std::cout << t->next << std::endl;
+	tex = t;
+}
 
+SDL_Texture* Game::findTex(texp head, std::string name) {
+	texp temp = head;
+	while (temp != NULL) {
+		if (std::strcmp(temp->name.c_str(), name.c_str()) == 0) {
+			return temp->current;
+		}
+		temp = temp->next;
+	}
+	return NULL;
+}

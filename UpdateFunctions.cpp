@@ -26,18 +26,18 @@ void Game::updateEnemies(std::vector<FLText>& explosions, std::vector<Entity>& e
 		}
 	}
 }
-void Game::updateExplosions(std::vector<FLText>& explosions, double delta, SDL_Texture* explotex, SDL_Renderer* rend) {
+void Game::updateExplosions(std::vector<FLText>& explosions, double delta, texp head, SDL_Renderer* rend) {
 	for (int i = 0; i < explosions.size(); i++) {
 		explosions[i].timer += delta;
 		SDL_Rect erect = { explosions[i].x, explosions[i].y, explosions[i].w, explosions[i].h };
-		SDL_RenderCopy(rend, explotex, NULL, &erect);
+		SDL_RenderCopy(rend, findTex(head, "explotex"), NULL, &erect);
 		if (explosions[i].timer > 0.2) {
 			explosions.erase(explosions.begin() + i);
 		}
 	}
 }
 
-void Game::updateButtons(std::vector<Button>& buttons, std::vector<FLText>& damagetext, Entity* player, Entity *targenemy, SDL_Renderer* rend, TTF_Font* font, int esize, double *bcool, int *crack, bool *playerturn, SDL_Texture* player4tex, SDL_Texture* player3tex, SDL_Texture* player2tex, Mix_Chunk* buttonsound, Mix_Chunk* cracksound) {
+void Game::updateButtons(std::vector<Button>& buttons, std::vector<FLText>& damagetext, Entity* player, Entity *targenemy, SDL_Renderer* rend, TTF_Font* font, int esize, double *bcool, int *crack, bool *playerturn, texp head, Mix_Chunk* buttonsound, Mix_Chunk* cracksound) {
 	for (auto& i : buttons) {
 		SDL_Rect but = { i.x, i.y, i.w, i.h };
 		SDL_RenderDrawRect(rend, &but);
@@ -56,11 +56,11 @@ void Game::updateButtons(std::vector<Button>& buttons, std::vector<FLText>& dama
 						damagetext.push_back(f);
 						switch (k) {
 						case 0:
-							(*player).sprite = player4tex;
+							(*player).sprite = findTex(head, "player4tex");
 							Mix_PlayChannel(-1, buttonsound, 0);
 							break;
 						case 1:
-							(*player).sprite = player3tex;
+							(*player).sprite = findTex(head, "player3tex");
 							Mix_PlayChannel(-1, buttonsound, 0);
 							break;
 						case 2:
@@ -68,7 +68,7 @@ void Game::updateButtons(std::vector<Button>& buttons, std::vector<FLText>& dama
 								(*crack)--;
 								(*player).atkdmg++;
 								(*player).health += 60;
-								(*player).sprite = player2tex;
+								(*player).sprite = findTex(head, "player2tex");
 								Mix_PlayChannel(-1, cracksound, 0);
 							}
 							break;
