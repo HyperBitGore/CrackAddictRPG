@@ -85,36 +85,32 @@ void Game::createEnemyInstance(std::vector<Entity>& enemies, std::vector<ESpawne
 	int spawnamount = rand() % 3 + 1;
 	for (auto& i : espawners) {
 		if ((*p).level >= i.minlvl && (*p).level < i.maxlvl) {
-			spawn:
-			int roll = rand() % 100;
-			for (int j = 0; j < i.spawnchances.size(); j++) {
-				if (roll > i.spawnchances[j]) {
-					switch (i.etypes[j]) {
-					case 0:
-						spawnE1(enemies, &sx, &sy, enemtex);
-						break;
-					case 1:
-						spawnE2(enemies, &sx, &sy, enem2tex);
-						break;
-					case 2:
-						spawnE3(enemies, &sx, &sy, enem3tex);
-						break;
-					case 3:
-						spawnE4(enemies, &sx, &sy, enem4tex);
-						break;
-					case 4:
-						spawnE5(enemies, &sx, &sy, enem5tex);
+			for (int k = spawnamount; k > 0; k--) {
+				int roll = rand() % 100;
+				for (int j = 0; j < i.spawnchances.size(); j++) {
+					if (roll > i.spawnchances[j]) {
+						switch (i.etypes[j]) {
+						case 0:
+							spawnE1(enemies, &sx, &sy, enemtex);
+							break;
+						case 1:
+							spawnE2(enemies, &sx, &sy, enem2tex);
+							break;
+						case 2:
+							spawnE3(enemies, &sx, &sy, enem3tex);
+							break;
+						case 3:
+							spawnE4(enemies, &sx, &sy, enem4tex);
+							break;
+						case 4:
+							spawnE5(enemies, &sx, &sy, enem5tex);
+							break;
+						}
 						break;
 					}
 				}
-				if (spawnamount > 0) {
-					spawnamount--;
-					goto spawn;
-				}
-				else {
-					return;
-				}
 			}
+			return;
 		}
 	}
 }

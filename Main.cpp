@@ -81,7 +81,6 @@ int main() {
 	Entity* targenemy;
 	game.createCombatButtons(buttons);
 	keys = SDL_GetKeyboardState(NULL);
-	std::cout << buttons.size() << std::endl;
 	SDL_Color red = { 255, 0, 50, 0 };
 	SDL_Color green = { 0, 255, 50, 0 };
 	Mix_VolumeMusic(30);
@@ -89,6 +88,7 @@ int main() {
 	int crack = 1;
 	std::vector<ESpawner> espawners;
 	game.createSpawners(espawners);
+	game.loadGame(&player, &crack, &xpreq);
 	game.createEnemyInstance(enemies, espawners, &player, enemtex, enem2tex, enem3tex, enem4tex, enem5tex);
 	while (!exitf) {
 		delta = game.getDelta();
@@ -96,6 +96,7 @@ int main() {
 			switch (e.type) {
 			case SDL_QUIT:
 				exitf = true;
+				game.saveGame(&player, &crack, &xpreq);
 				break;
 			}
 		}
