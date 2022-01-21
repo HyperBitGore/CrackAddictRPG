@@ -26,40 +26,22 @@ int main() {
 	Mix_Music* backtrack = Mix_LoadMUS("crack.wav");
 	TTF_Font* font = TTF_OpenFont("DelaGothicOne-Regular.ttf", 12);
 	Game game;
-	texp head = new TexListMem;
-	texp ntwo = new TexListMem;
-	texp nthr = new TexListMem;
-	texp nfour = new TexListMem;
-	texp nfive = new TexListMem;
-	texp nsix = new TexListMem;
-	texp nsev = new TexListMem;
-	texp neig = new TexListMem;
-	texp nin = new TexListMem;
-	texp nten = new TexListMem;
+	texp head = NULL;
 
 	SDL_Surface* playerimg = IMG_Load("player1.png");
 	SDL_Texture* playertex = SDL_CreateTextureFromSurface(rend, playerimg);
-	head->current = playertex;
-	head->next = ntwo;
-	head->name = "playertex";
-
+	game.insertTex(head, playertex, "playertex");
 	SDL_Surface* player2img = IMG_Load("bplayer1.png");
 	SDL_Texture* player2tex = SDL_CreateTextureFromSurface(rend, player2img);
-	ntwo->current = player2tex;
-	ntwo->next = nthr;
-	ntwo->name = "player2tex";
-
+	game.insertTex(head, player2tex, "player2tex");
 	SDL_Surface* player3img = IMG_Load("bplayer2.png");
 	SDL_Texture* player3tex = SDL_CreateTextureFromSurface(rend, player3img);
-	nthr->current = player3tex;
-	nthr->next = nfour;
-	nthr->name = "player3tex";
+	game.insertTex(head, player3tex, "player3tex");
 
 	SDL_Surface* player4img = IMG_Load("bplayer3.png");
 	SDL_Texture* player4tex = SDL_CreateTextureFromSurface(rend, player4img);
-	nfour->current = player4tex;
-	nfour->next = nfive;
-	nfour->name = "player4tex";
+	game.insertTex(head, player4tex, "player4tex");
+
 
 	SDL_Surface* doorimg = IMG_Load("door1.png");
 	SDL_Texture* doortex = SDL_CreateTextureFromSurface(rend, doorimg);
@@ -69,54 +51,34 @@ int main() {
 	
 	SDL_Surface* enemimg = IMG_Load("enemy1.png");
 	SDL_Texture* enemtex = SDL_CreateTextureFromSurface(rend, enemimg);
-	nfive->current = enemtex;
-	nfive->next = nsix;
-	nfive->name = "enemtex";
+	game.insertTex(head, enemtex, "enemtex");
 
 	SDL_Surface* enem2img = IMG_Load("enemy2.png");
 	SDL_Texture* enem2tex = SDL_CreateTextureFromSurface(rend, enem2img);
-	nsix->current = enem2tex;
-	nsix->next = nsev;
-	nsix->name = "enem2tex";
+	game.insertTex(head, enem2tex, "enem2tex");
 
 	SDL_Surface* enem3img = IMG_Load("enemy3.png");
 	SDL_Texture* enem3tex = SDL_CreateTextureFromSurface(rend, enem3img);
-	nsev->current = enem3tex;
-	nsev->next = neig;
-	nsev->name = "enem3tex";
+	game.insertTex(head, enem3tex, "enem3tex");
 
 	SDL_Surface* enem4img = IMG_Load("enemy4.png");
 	SDL_Texture* enem4tex = SDL_CreateTextureFromSurface(rend, enem4img);
-	neig->current = enem4tex;
-	neig->next = nin;
-	neig->name = "enem4tex";
+	game.insertTex(head, enem4tex, "enem4tex");
 
 	SDL_Surface* enem5img = IMG_Load("enemy5.png");
 	SDL_Texture* enem5tex = SDL_CreateTextureFromSurface(rend, enem5img);
-	nin->current = enem5tex;
-	nin->next = nten;
-	nin->name = "enem5tex";
+	game.insertTex(head, enem5tex, "enem5tex");
 
 	SDL_Surface* healimg = IMG_Load("health1.png");
 	SDL_Texture* healtex = SDL_CreateTextureFromSurface(rend, healimg);
 	
 	SDL_Surface* exlpo = IMG_Load("explosion.png");
 	SDL_Texture* explotex = SDL_CreateTextureFromSurface(rend, exlpo);
-	nten->current = explotex;
-	nten->next = NULL;
-	nten->name = "explotex";
+	game.insertTex(head, explotex, "explotex");
 
 	Mix_Chunk* edeath = Mix_LoadWAV("enemydeath.wav");
 	Mix_Chunk* buttonsound = Mix_LoadWAV("button.wav");
 	Mix_Chunk* cracksound = Mix_LoadWAV("cracksound.wav");
-
-	TexListMem* tex = head;
-	int i = 0;
-	std::cout << "Head: " << head << std::endl;
-	while (tex != NULL) {
-		std::cout << tex << std::endl;
-		tex = tex->next;
-	}
 
 
 	SDL_Event e;
@@ -213,6 +175,7 @@ int main() {
 				player.level = 1;
 				player.xp = 0;
 				crack = 1;
+				xpreq = 10;
 				enemies.clear();
 				game.createEnemyInstance(enemies, espawners, &player,head);
 			}

@@ -115,13 +115,17 @@ void Game::createEnemyInstance(std::vector<Entity>& enemies, std::vector<ESpawne
 	}
 }
 //Make this work lmao
-void Game::insertTex(texp tex, SDL_Texture* current) {
+//wtf, howd i not know this
+//https://www.cplusplus.com/forum/beginner/101394/
+//https://stackoverflow.com/questions/11842416/function-does-not-change-passed-pointer-c
+void Game::insertTex(TexListMem* &tex, SDL_Texture* current, std::string name) {
 	texp t;
 	t = new TexListMem;
 	t->current = current;
 	t->next = tex;
-	std::cout << t->next << std::endl;
+	t->name = name;
 	tex = t;
+	//std::cout << tex << std::endl;
 }
 
 SDL_Texture* Game::findTex(texp head, std::string name) {
