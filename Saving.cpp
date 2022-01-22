@@ -15,7 +15,7 @@ void Game::saveGame(Entity* player, int* crack, int *xpreq) {
 	mfile << std::to_string((*player).level) << "\n";
 	mfile << std::to_string((*player).xp) << "\n";
 	mfile << std::to_string((*crack)) << "\n";
-	mfile << std::to_string((*xpreq));
+	mfile << std::to_string((*xpreq)) << "\n";
 
 	mfile.close();
 }

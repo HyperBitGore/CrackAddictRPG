@@ -100,11 +100,13 @@ public:
 	//Utility
 	void drawText(SDL_Renderer* rend, TTF_Font* font, std::string text, SDL_Color color, int x, int y, int w, int h);
 	void createCombatButtons(std::vector<Button>& buttons);
+	void createMenuButtons(std::vector<Button>& buttons);
 	void createSpawners(std::vector<ESpawner>& espawners);
 	void createEnemyInstance(std::vector<Entity>& enemies, std::vector<ESpawner>& espawners, Entity* p, texp head);
 	//Update functions
 	void updateEnemies(std::vector<FLText>& explosions, std::vector<Entity>& enemies, std::vector<FLText>& damagetext, int* crack, bool playerturn, Entity* player, SDL_Renderer* rend, SDL_Texture* healtex, Mix_Chunk* edeath);
 	void updateExplosions(std::vector<FLText>& explosions, double delta, texp head, SDL_Renderer* rend);
 	void updateDamage(std::vector<FLText>& damagetext, double delta, SDL_Color red, SDL_Color green, SDL_Renderer* rend, TTF_Font* font);
+	void updatemButtons(std::vector<Button>& buttons, bool* combat, bool* exitf, double* bcool, SDL_Renderer* rend, TTF_Font* font, Entity* player);
 	void updateButtons(std::vector<Button>& buttons, std::vector<FLText>& damagetext, Entity* player, Entity* targenemy, SDL_Renderer* rend, TTF_Font* font, int esize, double* bcool, int* crack, bool* playerturn, texp head, Mix_Chunk* buttonsound, Mix_Chunk* cracksound);
 };

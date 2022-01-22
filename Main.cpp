@@ -85,7 +85,7 @@ int main() {
 	double delta = 0;
 	double pcool = 0;
 	double bcool = 0;
-	bool combat = true;
+	bool combat = false;
 	bool playerturn = true;
 	Entity player = {0, 0, 50, 100, 100, 1, 5};
 	player.xp = 0;
@@ -99,6 +99,7 @@ int main() {
 	std::vector<Entity> npcs;
 	std::vector<Entity> enemies;
 	std::vector<Button> buttons;
+	std::vector<Button> mbuttons;
 	std::vector<FLText> damagetext;
 	std::vector<FLText> explosions;
 	Entity* targenemy;
@@ -112,6 +113,7 @@ int main() {
 	std::vector<ESpawner> espawners;
 	game.createSpawners(espawners);
 	game.loadGame(&player, &crack, &xpreq);
+	game.createMenuButtons(mbuttons);
 	game.createEnemyInstance(enemies, espawners, &player,head);
 	while (!exitf) {
 		delta = game.getDelta();
@@ -137,6 +139,9 @@ int main() {
 				if (targetenemy > enemies.size() - 1) {
 					targetenemy = 0;
 				}
+			}
+			if (keys[SDL_SCANCODE_ESCAPE]) {
+				combat = false;
 			}
 			targenemy = &enemies[targetenemy];
 			if (player.xp >= xpreq) {
@@ -185,7 +190,8 @@ int main() {
 			}
 		}
 		else{
-			
+			bcool += delta;
+			game.updatemButtons(mbuttons, &combat, &exitf, &bcool, rend, font, &player);
 		}
 		SDL_RenderPresent(rend);
 	}

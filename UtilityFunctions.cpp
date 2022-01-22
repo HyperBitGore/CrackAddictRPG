@@ -43,6 +43,20 @@ void Game::createCombatButtons(std::vector<Button>& buttons) {
 	b3.click = &crackButton;
 	buttons.push_back(b3);
 }
+void Game::createMenuButtons(std::vector<Button>& buttons) {
+	Button b = { 400, 100, 100, 50 };
+	b.text = "New Game";
+	b.click = &crackButton;
+	buttons.push_back(b);
+	b.y = 150;
+	b.text = "Load";
+	b.click = &crackButton;
+	buttons.push_back(b);
+	b.y = 200;
+	b.text = "Exit";
+	b.click = &crackButton;
+	buttons.push_back(b);
+}
 void Game::createSpawners(std::vector<ESpawner>& espawners) {
 	ESpawner e;
 	//Basic spawning
@@ -83,6 +97,9 @@ void Game::createEnemyInstance(std::vector<Entity>& enemies, std::vector<ESpawne
 	float sx = 500.0f;
 	float sy = 250.0f;
 	int spawnamount = rand() % 3 + 1;
+	if ((*p).level < 2) {
+		spawnamount = 1;
+	}
 	for (auto& i : espawners) {
 		if ((*p).level >= i.minlvl && (*p).level < i.maxlvl) {
 			for (int k = spawnamount; k > 0; k--) {

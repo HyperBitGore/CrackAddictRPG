@@ -98,3 +98,35 @@ void Game::updateDamage(std::vector<FLText>& damagetext, double delta, SDL_Color
 		}
 	}
 }
+
+void Game::updatemButtons(std::vector<Button>& buttons, bool* combat, bool* exitf, double* bcool, SDL_Renderer* rend, TTF_Font* font, Entity* player) {
+	for (auto& i : buttons) {
+		SDL_Rect but = { i.x, i.y, i.w, i.h };
+		SDL_RenderDrawRect(rend, &but);
+		drawText(rend, font, i.text, { 255, 255, 100, 0 }, i.x, i.y, i.w, i.h);
+	}
+	int k = 0;
+	int mx;
+	int my;
+	if ((*bcool) >= 0.1) {
+		if (SDL_GetMouseState(&mx, &my) & SDL_BUTTON(SDL_BUTTON_LEFT)) {
+			for (auto& i : buttons) {
+				if (mx >= i.x && mx <= i.x + i.w && my >= i.y && my <= i.y + i.h) {
+					switch (k) {
+					case 0:
+						(*combat) = true;
+						(*player).health = -1;
+						break;
+					case 1:
+						(*combat) = true;
+						break;
+					case 2:
+						(*exitf) = true;
+						break;
+					}
+				}
+				k++;
+			}
+		}
+	}
+}
