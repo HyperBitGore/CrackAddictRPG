@@ -16,7 +16,10 @@ void Game::saveGame(Entity* player, int* crack, int *xpreq) {
 	mfile << std::to_string((*player).xp) << "\n";
 	mfile << std::to_string((*crack)) << "\n";
 	mfile << std::to_string((*xpreq)) << "\n";
-
+	mfile << std::to_string((*player).skillpoints) << "\n";
+	mfile << std::to_string((*player).strength) << "\n";
+	mfile << std::to_string((*player).agility) << "\n";
+	mfile << std::to_string((*player).intelligence) << "\n";
 	mfile.close();
 }
 void Game::loadGame(Entity* player, int* crack, int *xpreq) {
@@ -30,7 +33,7 @@ void Game::loadGame(Entity* player, int* crack, int *xpreq) {
 	while (getline(mfile, line)) {
 		switch (i) {
 		case 0:
-			(*player).atkdmg = std::stoi(line);
+			(*player).atkdmg = std::stof(line);
 			break;
 		case 1:
 			(*player).health = std::stoi(line);
@@ -46,6 +49,18 @@ void Game::loadGame(Entity* player, int* crack, int *xpreq) {
 			break;
 		case 5:
 			(*xpreq) = std::stoi(line);
+			break;
+		case 6:
+			(*player).skillpoints = std::stoi(line);
+			break;
+		case 7:
+			(*player).strength = std::stof(line);
+			break;
+		case 8:
+			(*player).agility = std::stof(line);
+			break;
+		case 9:
+			(*player).intelligence = std::stof(line);
 			break;
 		}
 		i++;

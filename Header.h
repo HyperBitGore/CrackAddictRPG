@@ -23,13 +23,17 @@ struct Entity {
 	int h;
 	int health;
 	int level;
-	int atkdmg;
+	float atkdmg;
 	std::vector<ITYPE> inventory;
 	//index 0 is hands, index 1 is shoes, index 2 is pants, index 3 is shirt, index 4 is back, index 5 is hands, index 6 is head
 	ITYPE equipped;
 	int type;
 	int index;
 	int xp;
+	float strength;
+	float agility;
+	float intelligence;
+	int skillpoints;
 	SDL_Texture* sprite;
 };
 struct FLText {
@@ -40,6 +44,7 @@ struct FLText {
 	std::string text;
 	double timer;
 	int type;
+	SDL_Color color;
 };
 class Button {
 public:
@@ -97,16 +102,25 @@ public:
 	void insertTex(TexListMem* &tex,  SDL_Texture* current, std::string name);
 	SDL_Texture* findTex(texp head, std::string name);
 
+	//Text functions
+	void drawText(SDL_Renderer* rend, texp head, std::string text, int x, int y, int w, int h);
+	void CreateText(SDL_Renderer* rend, TTF_Font* font, std::string text, SDL_Color color, TexListMem*& head);
+	void createDynamicText(SDL_Renderer* rend, TTF_Font* font, SDL_Color color, TexListMem*& head, texp& end);
+	void editText(SDL_Renderer* rend, TTF_Font* font, std::string text, SDL_Color color, texp& head);
+	void drawTempText(SDL_Renderer* rend, TTF_Font* font, std::string text, SDL_Color color, int x, int y, int w, int h);
+
 	//Utility
-	void drawText(SDL_Renderer* rend, TTF_Font* font, std::string text, SDL_Color color, int x, int y, int w, int h);
-	void createCombatButtons(std::vector<Button>& buttons);
-	void createMenuButtons(std::vector<Button>& buttons);
+	void createCombatButtons(std::vector<Button>& buttons, TexListMem*& head, SDL_Renderer* rend, TTF_Font* font, SDL_Color yellow);
+	void createMenuButtons(std::vector<Button>& buttons, TexListMem*& head, SDL_Renderer* rend, TTF_Font* font, SDL_Color yellow);
+	void createUpgradeButtons(std::vector<Button>& buttons, TexListMem*& head, SDL_Renderer* rend, TTF_Font* font, SDL_Color yellow);
 	void createSpawners(std::vector<ESpawner>& espawners);
 	void createEnemyInstance(std::vector<Entity>& enemies, std::vector<ESpawner>& espawners, Entity* p, texp head);
+
 	//Update functions
 	void updateEnemies(std::vector<FLText>& explosions, std::vector<Entity>& enemies, std::vector<FLText>& damagetext, int* crack, bool playerturn, Entity* player, SDL_Renderer* rend, SDL_Texture* healtex, Mix_Chunk* edeath);
 	void updateExplosions(std::vector<FLText>& explosions, double delta, texp head, SDL_Renderer* rend);
-	void updateDamage(std::vector<FLText>& damagetext, double delta, SDL_Color red, SDL_Color green, SDL_Renderer* rend, TTF_Font* font);
-	void updatemButtons(std::vector<Button>& buttons, bool* combat, bool* exitf, double* bcool, SDL_Renderer* rend, TTF_Font* font, Entity* player);
-	void updateButtons(std::vector<Button>& buttons, std::vector<FLText>& damagetext, Entity* player, Entity* targenemy, SDL_Renderer* rend, TTF_Font* font, int esize, double* bcool, int* crack, bool* playerturn, texp head, Mix_Chunk* buttonsound, Mix_Chunk* cracksound);
+	void updateDamage(std::vector<FLText>& damagetext, double delta, SDL_Renderer* rend, TTF_Font* font, texp head);
+	void updatemButtons(std::vector<Button>& buttons, bool* combat, bool* exitf, double* bcool, SDL_Renderer* rend, texp font, Entity* player);
+	void updateupButtons(std::vector<Button>& buttons, SDL_Renderer* rend, texp font, double* bcool, Entity* player, bool* levelm, bool* change);
+	void updateButtons(std::vector<Button>& buttons, std::vector<FLText>& damagetext, Entity* player, Entity* targenemy, SDL_Renderer* rend, texp font, int esize, double* bcool, int* crack, bool* playerturn, bool* levelm, texp head, Mix_Chunk* buttonsound, Mix_Chunk* cracksound);
 };

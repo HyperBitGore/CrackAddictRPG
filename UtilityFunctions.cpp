@@ -1,16 +1,31 @@
 #include "Header.h"
 
 
-
-void Game::drawText(SDL_Renderer* rend, TTF_Font* font, std::string text, SDL_Color color, int x, int y, int w, int h) {
-	SDL_Surface* surf = TTF_RenderText_Solid(font, text.c_str(), color);
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(rend, surf);
-	SDL_Rect rect = { x, y, w, h };
-	SDL_RenderCopy(rend, texture, NULL, &rect);
-
-	SDL_FreeSurface(surf);
-	SDL_DestroyTexture(texture);
+//Make this work lmao
+//wtf, howd i not know this
+//https://www.cplusplus.com/forum/beginner/101394/
+//https://stackoverflow.com/questions/11842416/function-does-not-change-passed-pointer-c
+void Game::insertTex(TexListMem*& tex, SDL_Texture* current, std::string name) {
+	texp t;
+	t = new TexListMem;
+	t->current = current;
+	t->next = tex;
+	t->name = name;
+	tex = t;
+	//std::cout << tex << std::endl;
 }
+
+SDL_Texture* Game::findTex(texp head, std::string name) {
+	texp temp = head;
+	while (temp != NULL) {
+		if (std::strcmp(temp->name.c_str(), name.c_str()) == 0) {
+			return temp->current;
+		}
+		temp = temp->next;
+	}
+	return NULL;
+}
+
 //Leftover from trying to implement std::function with std::bind to replace C function pointer
 //https://stackoverflow.com/questions/11037393/c-function-pointer-to-functions-with-variable-number-of-arguments
 //Might still be do able
@@ -29,34 +44,69 @@ void runButton(Entity* e, Entity* e2) {
 void crackButton(Entity* e, Entity* e2) {
 
 }
-void Game::createCombatButtons(std::vector<Button>& buttons) {
+void Game::createCombatButtons(std::vector<Button>& buttons, TexListMem*& head, SDL_Renderer* rend, TTF_Font* font, SDL_Color yellow) {
 	Button b = { 185, 550, 100, 50 };
 	b.text = "Attack";
 	b.click = &atkButton;
 	buttons.push_back(b);
+	CreateText(rend, font, b.text, yellow, head);
 	Button b2 = { 350, 550, 100, 50 };
 	b2.text = "Block";
 	b2.click = &runButton;
 	buttons.push_back(b2);
+	CreateText(rend, font, b2.text, yellow, head);
 	Button b3 = { 400, 650, 100, 50 };
 	b3.text = "Do Crack!";
 	b3.click = &crackButton;
 	buttons.push_back(b3);
+	CreateText(rend, font, b3.text, yellow, head);
+	Button b4 = { 100, 350, 100, 50 };
+	b4.text = "Upgrade Menu";
+	b4.click = &crackButton;
+	buttons.push_back(b4);
+	CreateText(rend, font, b4.text, yellow, head);
 }
-void Game::createMenuButtons(std::vector<Button>& buttons) {
+void Game::createMenuButtons(std::vector<Button>& buttons, TexListMem*& head, SDL_Renderer* rend, TTF_Font* font, SDL_Color yellow) {
 	Button b = { 400, 100, 100, 50 };
 	b.text = "New Game";
 	b.click = &crackButton;
 	buttons.push_back(b);
+	CreateText(rend, font, b.text, yellow, head);
 	b.y = 150;
 	b.text = "Load";
 	b.click = &crackButton;
 	buttons.push_back(b);
+	CreateText(rend, font, b.text, yellow, head);
 	b.y = 200;
 	b.text = "Exit";
 	b.click = &crackButton;
 	buttons.push_back(b);
+	CreateText(rend, font, b.text, yellow, head);
 }
+void Game::createUpgradeButtons(std::vector<Button>& buttons, TexListMem*& head, SDL_Renderer* rend, TTF_Font* font, SDL_Color yellow) {
+	Button b = { 150, 400, 100, 50 };
+	b.text = "Upgrade Strength";
+	b.click = &crackButton;
+	buttons.push_back(b);
+	CreateText(rend, font, b.text, yellow, head);
+	b.x = 270;
+	b.text = "Upgrade Agility";
+	b.click = &crackButton;
+	buttons.push_back(b);
+	CreateText(rend, font, b.text, yellow, head);
+	b.x = 390;
+	b.text = "Upgrade Intelligence";
+	b.click = &crackButton;
+	buttons.push_back(b);
+	CreateText(rend, font, b.text, yellow, head);
+	b.x = 510;
+	b.text = "Back to Crack";
+	b.click = &crackButton;
+	buttons.push_back(b);
+	CreateText(rend, font, b.text, yellow, head);
+}
+
+
 void Game::createSpawners(std::vector<ESpawner>& espawners) {
 	ESpawner e;
 	//Basic spawning
@@ -130,28 +180,4 @@ void Game::createEnemyInstance(std::vector<Entity>& enemies, std::vector<ESpawne
 			return;
 		}
 	}
-}
-//Make this work lmao
-//wtf, howd i not know this
-//https://www.cplusplus.com/forum/beginner/101394/
-//https://stackoverflow.com/questions/11842416/function-does-not-change-passed-pointer-c
-void Game::insertTex(TexListMem* &tex, SDL_Texture* current, std::string name) {
-	texp t;
-	t = new TexListMem;
-	t->current = current;
-	t->next = tex;
-	t->name = name;
-	tex = t;
-	//std::cout << tex << std::endl;
-}
-
-SDL_Texture* Game::findTex(texp head, std::string name) {
-	texp temp = head;
-	while (temp != NULL) {
-		if (std::strcmp(temp->name.c_str(), name.c_str()) == 0) {
-			return temp->current;
-		}
-		temp = temp->next;
-	}
-	return NULL;
 }
